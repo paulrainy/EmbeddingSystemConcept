@@ -1,7 +1,10 @@
 /venv
+/.venv
 /.idea
 /test_lg.xlsx
 /first_output.xlsx
 /second_output.xlsx
 /third_output.xlsx
 /volumes/
+/test_md.xlsx
+/test_sm.xlsx
