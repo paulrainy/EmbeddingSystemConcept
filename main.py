@@ -251,15 +251,6 @@ class EmbeddingPipeline:
         print(f"{len(np_input_list)}")
 
         for i, vector in enumerate(np_input_list):
-            # "inner_id": self.prepared_df[i].at[self.prepared_df[i].index[0], "Id"],
-            # "direction_name": self.prepared_df[i].at[
-            # self.prepared_df[i].index[0], "Direction"],
-            # "section_name": self.prepared_df[i].at[
-            # self.prepared_df[i].index[0], "Section"],
-            # "test_case_name": self.prepared_df[i].at[
-            # self.prepared_df[i].index[0], "TestCaseName"],
-            # "steps": str(self.prepared_df[i]["Steps"]),
-            # "expected_result": str(self.prepared_df[i]["ExpectedResult"])
             milvus_output_list = [{"idx": i,
                                    "vector": vector,
                                    "inner_id": int(self.prepared_df[i].at[self.prepared_df[i].index[0], "Id"]),
@@ -367,34 +358,10 @@ class EmbeddingPipeline:
 
 
 def main():
-    test_obj = EmbeddingPipeline('test_lg.xlsx')
+    test_obj = EmbeddingPipeline('test_md.xlsx')
     test_obj.import_df()
     test_obj.prepare_df()
-    #print(test_obj.prepared_df[0].at[test_obj.prepared_df[0].index[0], "Id"])
-    #print(test_obj.prepared_df[0].at[test_obj.prepared_df[0].index[0], "Direction"])
-    #print(test_obj.prepared_df[0].at[test_obj.prepared_df[0].index[0], "Section"])
-    #print(test_obj.prepared_df[0].at[test_obj.prepared_df[0].index[0], "TestCaseName"])
-    #print(test_obj.prepared_df[0]["Steps"])
-    #print(test_obj.prepared_df[0]["ExpectedResult"])
-    #print(len(str(test_obj.prepared_df[0].at[test_obj.prepared_df[0].index[0], "Id"])))
-    #print(len(str(test_obj.prepared_df[0].at[test_obj.prepared_df[0].index[0], "Direction"])))
-    #print(len(str(test_obj.prepared_df[0].at[test_obj.prepared_df[0].index[0], "Section"])))
-    #print(len(str(test_obj.prepared_df[0].at[test_obj.prepared_df[0].index[0], "TestCaseName"])))
-    #print(len(str(test_obj.prepared_df[0]["Steps"])))
-    #print(len(str(test_obj.prepared_df[0]["ExpectedResult"])))
     test_obj.process_df()
-    #print(test_obj.prepared_df[0].at[test_obj.prepared_df[0].index[0], "Id"])
-    #print(test_obj.prepared_df[0].at[test_obj.prepared_df[0].index[0], "Direction"])
-    #print(test_obj.prepared_df[0].at[test_obj.prepared_df[0].index[0], "Section"])
-    #print(test_obj.prepared_df[0].at[test_obj.prepared_df[0].index[0], "TestCaseName"])
-    #print(test_obj.prepared_df[0]["Steps"])
-    #print(test_obj.prepared_df[0]["ExpectedResult"])
-    #print(len(str(test_obj.prepared_df[0].at[test_obj.prepared_df[0].index[0], "Id"])))
-    #print(len(str(test_obj.prepared_df[0].at[test_obj.prepared_df[0].index[0], "Direction"])))
-    #print(len(str(test_obj.prepared_df[0].at[test_obj.prepared_df[0].index[0], "Section"])))
-    #print(len(str(test_obj.prepared_df[0].at[test_obj.prepared_df[0].index[0], "TestCaseName"])))
-    #print(len(str(test_obj.prepared_df[0]["Steps"])))
-    #print(len(str(test_obj.prepared_df[0]["ExpectedResult"])))
     test_obj.connect_to_milvus()
     test_obj.set_milvus_collection_name('test_collection')
     print(test_obj.get_milvus_collection_name())
@@ -408,7 +375,7 @@ def main():
     test_obj.get_vector_from_milvus([0, 1, 2, 3])
     print(test_obj.get_milvus_processed_data())
     print(test_obj.milvus_data_count())
-    print(test_obj.vector_search_by_id(253945))
+    #print(test_obj.vector_search_by_id(253945))
 
 
 main()
