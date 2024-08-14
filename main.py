@@ -224,6 +224,21 @@ class EmbeddingPipeline:
                 index_type="STL_SORT"
             )
 
+            index_params.add_index(
+                field_name="direction_name",
+                index_type="Trie"
+            )
+
+            index_params.add_index(
+                field_name="section_name",
+                index_type="Trie"
+            )
+
+            index_params.add_index(
+                field_name="test_case_name",
+                index_type="Trie"
+            )
+
             self.milvus_client.create_collection(
                 collection_name=self.milvus_collection_name,
                 schema=schema,
@@ -299,6 +314,14 @@ class EmbeddingPipeline:
         )
         return search_output.pop(0)
 
+    def search_vector_by_direction_name(self, _direction_name: str) -> List[dict]:
+        search_output = self.milvus_client.query(
+            collection_name=self.milvus_collection_name,
+            filter="direction_name like \"%{}%\"".format(_direction_name),
+            output_fields=["idx", "vector", "inner_id", "direction_name", "section_name", "test_case_name"]
+        )
+        return search_output
+
     def clusterize_data(self) -> None:
         print("Clustering data...")
         self.milvus_processed_data = np.array(self.milvus_processed_data)
@@ -317,18 +340,18 @@ class EmbeddingPipeline:
 test_obj = EmbeddingPipeline('test_lg.xlsx')
 
 
-def start_bd() -> None:
+def start_bd(collection_name: str) -> None:
     test_obj.import_df()
     test_obj.prepare_df()
     test_obj.process_df()
     test_obj.connect_to_milvus_client()
-    test_obj.set_milvus_collection_name('test_collection')
+    test_obj.set_milvus_collection_name(collection_name)
     test_obj.drop_milvus_collection()
     test_obj.create_milvus_collection()
     test_obj.send_data_to_milvus_collection()
 
 
-def process_milvus_output(milvus_output: List[dict] or dict) -> None:
+def process_milvus_output(milvus_output: List[dict] or dict, switcher=None) -> None:
     def help_print(array: dict) -> None:
         print(f"Milvus ID: {array['idx']}")
         print(f"TestIT ID: {array['inner_id']}")
@@ -342,11 +365,31 @@ def process_milvus_output(milvus_output: List[dict] or dict) -> None:
         print("Search by TesIT ID output:")
         help_print(milvus_output)
     else:
-        print("Search by embedding cosine similarity output:")
-        for i, element in enumerate(milvus_output):
-            print(f"Num: {i + 1}")
-            print(f"Cosine Similarity: {element['distance']}")
-            help_print(element['entity'])
+        if switcher == 'search':
+            print("Search by embedding cosine similarity output:")
+            for i, element in enumerate(milvus_output):
+                print(f"Num: {i + 1}")
+                print(f"Cosine Similarity: {element['distance']}")
+                help_print(element['entity'])
+
+        elif switcher == 'query':
+            print("Search by direction name output:")
+            for i, element in enumerate(milvus_output):
+                print(f"Num: {i + 1}")
+                help_print(element)
+
+        else:
+            raise ValueError("Switcher must be either search or query")
+
+
+def user_terminal_interface() -> str:
+    while True:
+        print("Welcome to Embedding System Concept!\nChoose an option:")
+        print("1. Search by TestIT ID")
+        print("2. Search by embedding")
+        print("3. Search by direction name")
+        print("4. Create new milvus collection")
+        print("5. Drop milvus collection")
 
 
 def main() -> None:
@@ -358,9 +401,11 @@ def main() -> None:
 
     a = test_obj.search_vector_by_inner_id(67810)
     b = test_obj.search_vectors_by_embedding([a['vector']])
+    c = test_obj.search_vector_by_direction_name("1. Общий функционал/1.3 Задачи")
 
     process_milvus_output(a)
-    process_milvus_output(b)
+    process_milvus_output(b, switcher='search')
+    process_milvus_output(c, switcher='query')
 
     #bl = b.pop(0)
     #print(bl)

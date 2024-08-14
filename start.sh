@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Name of the virtual environment
-VENV_NAME=".venv"
+VENV_NAME="venv"
 
 # Check if Python is installed
 if command -v python3 &>/dev/null; then
@@ -39,9 +39,9 @@ echo "2) requirements_gpu.txt"
 read -p "Enter the number (1 or 2): " CHOICE
 
 if [ "$CHOICE" == "1" ]; then
-    REQUIREMENTS_FILE="requirements_cpu.txt"
+    REQUIREMENTS_FILE="./requirements_cpu.txt"
 elif [ "$CHOICE" == "2" ]; then
-    REQUIREMENTS_FILE="requirements_gpu.txt"
+    REQUIREMENTS_FILE="./requirements_gpu.txt"
 else
     echo "Invalid choice. Script is exiting."
     exit 1
@@ -56,4 +56,24 @@ else
     exit 1
 fi
 
-echo "Installation script completed."
+echo "Starting milvus with docker-compose..."
+sudo docker-compose up -f docker-compose.yml -d
+
+# Проверяем состояние контейнера
+while true; do
+    # Получаем состояние контейнера
+    state=$(sudo docker-compose ps --status "status=running" --filter "health=healthy" --format "{{.State}}" milvus-standalone)
+
+    # Check if the state is "Up (healthy)"
+    if [[ "$state" == "Up (healthy)" ]]; then
+        echo "The container is up and running normally."
+        break
+    else
+        echo "Waiting... Container state: $state"
+        sleep 5
+    fi
+done
+
+echo "Running the Python script..."
+python main.py
+
