@@ -390,6 +390,7 @@ def user_terminal_interface() -> str:
         print("3. Search by direction name")
         print("4. Create new milvus collection")
         print("5. Drop milvus collection")
+        print()
 
 
 def main() -> None:
@@ -399,13 +400,13 @@ def main() -> None:
 
     print()
 
-    a = test_obj.search_vector_by_inner_id(67810)
+    a = test_obj.search_vector_by_inner_id(253951)
     b = test_obj.search_vectors_by_embedding([a['vector']])
-    c = test_obj.search_vector_by_direction_name("1. Общий функционал/1.3 Задачи")
+    #c = test_obj.search_vector_by_direction_name("1. Общий функционал/1.3 Задачи")
 
     process_milvus_output(a)
     process_milvus_output(b, switcher='search')
-    process_milvus_output(c, switcher='query')
+    #process_milvus_output(c, switcher='query')
 
     #bl = b.pop(0)
     #print(bl)
