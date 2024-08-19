@@ -57,7 +57,7 @@ else
 fi
 
 echo "Starting milvus with docker-compose..."
-sudo docker-compose up -f docker-compose.yml -d
+sudo docker-compose up -d
 
 # Проверяем состояние контейнера
 while true; do

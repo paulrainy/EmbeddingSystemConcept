@@ -3,6 +3,7 @@ import numpy as np
 import re
 import math
 import torch
+import subprocess
 import torch.nn.functional as F
 from pandas import DataFrame
 from torch import Tensor
@@ -337,18 +338,18 @@ class EmbeddingPipeline:
         self.clustered_centers = kmeans.cluster_centers_
 
 
-test_obj = EmbeddingPipeline('test_lg.xlsx')
+obj_pipeline = EmbeddingPipeline('test_lg.xlsx')
 
 
 def start_bd(collection_name: str) -> None:
-    test_obj.import_df()
-    test_obj.prepare_df()
-    test_obj.process_df()
-    test_obj.connect_to_milvus_client()
-    test_obj.set_milvus_collection_name(collection_name)
-    test_obj.drop_milvus_collection()
-    test_obj.create_milvus_collection()
-    test_obj.send_data_to_milvus_collection()
+    obj_pipeline.import_df()
+    obj_pipeline.prepare_df()
+    obj_pipeline.process_df()
+    obj_pipeline.connect_to_milvus_client()
+    obj_pipeline.set_milvus_collection_name(collection_name)
+    obj_pipeline.drop_milvus_collection()
+    obj_pipeline.create_milvus_collection()
+    obj_pipeline.send_data_to_milvus_collection()
 
 
 def process_milvus_output(milvus_output: List[dict] or dict, switcher=None) -> None:
@@ -382,7 +383,7 @@ def process_milvus_output(milvus_output: List[dict] or dict, switcher=None) -> N
             raise ValueError("Switcher must be either search or query")
 
 
-def user_terminal_interface() -> str:
+def user_terminal_interface() -> None:
     while True:
         print("Welcome to Embedding System Concept!\nChoose an option:")
         print("1. Search by TestIT ID")
@@ -390,18 +391,18 @@ def user_terminal_interface() -> str:
         print("3. Search by direction name")
         print("4. Create new milvus collection")
         print("5. Drop milvus collection")
-        print()
+        print("6. Fill empty milvus collection")
 
 
 def main() -> None:
     # start_bd()
-    test_obj.connect_to_milvus_client()
-    test_obj.set_milvus_collection_name('test_collection')
+    obj_pipeline.connect_to_milvus_client()
+    obj_pipeline.set_milvus_collection_name('test_collection')
 
     print()
 
-    a = test_obj.search_vector_by_inner_id(253951)
-    b = test_obj.search_vectors_by_embedding([a['vector']])
+    a = obj_pipeline.search_vector_by_inner_id(253951)
+    b = obj_pipeline.search_vectors_by_embedding([a['vector']])
     #c = test_obj.search_vector_by_direction_name("1. Общий функционал/1.3 Задачи")
 
     process_milvus_output(a)
@@ -415,5 +416,8 @@ def main() -> None:
     # section name удалить +
     # поиск по функциональным областям (Игорь скинет)
 
+    #
 
-main()
+
+if __name__ == "__main__":
+    main()
